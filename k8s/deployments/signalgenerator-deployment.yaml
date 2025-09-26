@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: signalgenerator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: signalgenerator
+  template:
+    metadata:
+      labels:
+        app: signalgenerator
+    spec:
+      containers:
+      - name: signalgenerator
+        image: ashwin0302/signalgenerator:latest
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            cpu: "200m"
+            memory: "256Mi"
+          limits:
+            cpu: "1000m"
+            memory: "1Gi"
+        env:
+        - name: MONGO_URI
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key: mongo-uri

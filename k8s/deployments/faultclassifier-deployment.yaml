@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: faultclassifier
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: faultclassifier
+  template:
+    metadata:
+      labels:
+        app: faultclassifier
+    spec:
+      containers:
+      - name: faultclassifier
+        image: ashwin0302/faultclassifier:latest
+        ports:
+        - containerPort: 8001
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "1Gi"
+          limits:
+            cpu: "2000m"
+            memory: "4Gi"
+        env:
+        - name: MONGO_URI
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key: mongo-uri

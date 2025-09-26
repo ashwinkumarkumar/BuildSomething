@@ -1,0 +1,41 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: gearboxguard-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: localhost
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend
+            port:
+              number: 80
+      - path: /api/signal(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: signalgenerator
+            port:
+              number: 8000
+      - path: /api/extract(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: featureextractor
+            port:
+              number: 8100
+      - path: /api/predict(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: faultclassifier
+            port:
+              number: 8001

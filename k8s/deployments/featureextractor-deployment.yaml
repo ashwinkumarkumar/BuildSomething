@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: featureextractor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: featureextractor
+  template:
+    metadata:
+      labels:
+        app: featureextractor
+    spec:
+      containers:
+      - name: featureextractor
+        image: ashwin0302/featureextractor:latest
+        ports:
+        - containerPort: 8100
+        resources:
+          requests:
+            cpu: "300m"
+            memory: "512Mi"
+          limits:
+            cpu: "1500m"
+            memory: "2Gi"
+        env:
+        - name: MONGO_URI
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key: mongo-uri

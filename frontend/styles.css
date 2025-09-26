@@ -1,0 +1,28 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+  padding: 20px;
+}
+h1 { color: #333; }
+button {
+  margin: 10px;
+  padding: 10px 15px;
+  font-size: 14px;
+  cursor: pointer;
+}
+#resultBox {
+  margin-top: 20px;
+  background: #fff;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+pre {
+  background: #eee;
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+#signalBox {
+  display: none;
+}

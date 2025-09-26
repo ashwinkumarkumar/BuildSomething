@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GearboxGuard Frontend</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>GearboxGuard Diagnostic Portal</h1>
+
+  <button onclick="runPipeline('broken')">Run Broken Sample</button>
+  <button onclick="runPipeline('healthy')">Run Healthy Sample</button>
+
+  <div id="signalBox">
+    <h3>Signal Data:</h3>
+    <pre id="signalText"></pre>
+  </div>
+
+  <div id="resultBox">
+    <h3>Prediction Result:</h3>
+    <pre id="resultText">Waiting for input...</pre>
+  </div>
+
+  <script>
+  async function runPipeline(label) {
+    document.getElementById("resultText").innerText = "Fetching sample...";
+
+    try {
+      // Step 1: Generate signal from signalgenerator
+      const signalRes = await fetch(`/api/signal/test?label=${label}`);
+      const signal = await signalRes.json();
+
+      // Display signal data
+      document.getElementById("signalText").innerText = JSON.stringify(signal.data, null, 2);
+      document.getElementById("signalBox").style.display = "block";
+
+      // Step 2: Extract features from featureextractor
+      const featureRes = await fetch("/api/extract", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data: signal.data })
+      });
+      const features = await featureRes.json();
+
+      // Step 3: Classify fault from faultclassifier
+      const predictData = {
+        rms: features.rms,
+        kurtosis: features.kurtosis,
+        skewness: features.skewness,
+        std_dev: features.std_dev,
+        fft_peaks: features.fft_peaks
+      };
+      const predictRes = await fetch("/api/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(predictData)
+      });
+      const prediction = await predictRes.json();
+
+      // Display result
+      document.getElementById("resultText").innerText = JSON.stringify(prediction, null, 2);
+
+    } catch (err) {
+      document.getElementById("resultText").innerText = "Pipeline error: " + err.message;
+    }
+  }
+  </script>
+</body>
+</html>
